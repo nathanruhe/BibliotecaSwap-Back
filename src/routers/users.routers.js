@@ -3,6 +3,8 @@ const router = Router();
 const userCtrl = require("../controller/users.controller");
 
 // añadir rutas
+router.post("/register", userCtrl.register);
+router.post("/login", userCtrl.login); 
 
 
 
