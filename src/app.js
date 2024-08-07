@@ -17,6 +17,10 @@ app.use(function(req, res, next) {
     res.status(404).json({error:true, codigo: 404, message: "Endpoint doesnt found"});
 });
 
+app.get("/hola", (req, res) => {
+    res.send({ message: "hola mundo!"})
+})
+
 app.use(errorHandling);
 
 module.exports = app;
