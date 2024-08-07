@@ -3,7 +3,6 @@ const router = Router();
 const booksCtrl = require("../controller/books.controller");
 
 // añadir rutas
-router.get("/");
 
 
 

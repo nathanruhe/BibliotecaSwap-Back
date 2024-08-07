@@ -8,6 +8,10 @@ const app = express();
 
 app.set("port", process.env.PORT || 3000);
 
+app.get('/status', (req, res) => {
+    res.json({ message: "API DESPLEGADA" });
+});
+
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
