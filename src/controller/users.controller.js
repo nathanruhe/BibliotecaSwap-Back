@@ -43,7 +43,9 @@ async function login (request, response) {
         let params;
         let respuesta;
 
-        sql = `SELECT id_user, name, last_name, email, photo, about, province, availability, genres, hidden FROM user WHERE email = ? AND password = ?`;
+        sql = `SELECT id_user, name, last_name, email, photo, about, province, availability, genres, hidden 
+            FROM user 
+            WHERE email = ? AND password = ?`;
         params = [
             request.body.email,
             request.body.password];
@@ -55,22 +57,29 @@ async function login (request, response) {
         } else {
             let user = result[0]; 
 
-            // consulta estrellas valoracion
+            // consulta total estrellas valoracion
             sql = `SELECT AVG(rating) as media FROM ratings WHERE id_rated = ?`;
             params = [user.id_user];
 
-            let [resultEstrellas] = await pool.query(sql, params);
-            let rating = resultEstrellas[0].media;
+            let [totalEstrellas] = await pool.query(sql, params);
+            let rating = totalEstrellas[0].media;
 
-            // consulta comentarios valoracion
-            sql = `SELECT comment FROM ratings WHERE id_rated = ?`;
+            // consulta reseñas
+            sql = `SELECT name, last_name, rating, comment 
+                   FROM ratings
+                   JOIN user ON ratings.id_rater = user.id_user 
+                   WHERE ratings.id_rated = ?`;
             params = [user.id_user];
 
-            let [resultComentarios] = await pool.query(sql, params);
-            let comment = resultComentarios.map(row => row.comment);
-            console.log(comment);
+            let [totalResenas] = await pool.query(sql, params);
+            let resenas = totalResenas.map(row => ({
+                name: row.name,
+                last_name: row.last_name,
+                rating: row.rating,
+                comment: row.comment
+            }));
             
-            respuesta = {error: false, codigo: 200, mensaje: "Sesión iniciada", dataUser: {...user, rating: rating || 0, comment: comment || []}};
+            respuesta = {error: false, codigo: 200, mensaje: "Sesión iniciada", dataUser: {...user, rating: rating || 0, resenas: resenas || []}};
         };
 
         response.send(respuesta)
