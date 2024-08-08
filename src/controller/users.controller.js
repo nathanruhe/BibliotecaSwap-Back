@@ -43,7 +43,7 @@ async function login (request, response) {
         let params;
         let respuesta;
 
-        sql = `SELECT id_user, name, last_name, email, province FROM user WHERE email = ? AND password = ?`;
+        sql = `SELECT id_user, name, last_name, email, photo, about, province, availability, genres, hidden FROM user WHERE email = ? AND password = ?`;
         params = [
             request.body.email,
             request.body.password];
@@ -54,7 +54,23 @@ async function login (request, response) {
             respuesta = {error: true, codigo: 200, mensaje: "Los datos introducidos no son válidos"};
         } else {
             let user = result[0]; 
-            respuesta = {error: false, codigo: 200, mensaje: "sesion iniciada" , dataUser: user};
+
+            // consulta estrellas valoracion
+            sql = `SELECT AVG(rating) as media FROM ratings WHERE id_rated = ?`;
+            params = [user.id_user];
+
+            let [resultEstrellas] = await pool.query(sql, params);
+            let rating = resultEstrellas[0].media;
+
+            // consulta comentarios valoracion
+            sql = `SELECT comment FROM ratings WHERE id_rated = ?`;
+            params = [user.id_user];
+
+            let [resultComentarios] = await pool.query(sql, params);
+            let comment = resultComentarios.map(row => row.comment);
+            console.log(comment);
+            
+            respuesta = {error: false, codigo: 200, mensaje: "Sesión iniciada", dataUser: {...user, rating: rating || 0, comment: comment || []}};
         };
 
         response.send(respuesta)
