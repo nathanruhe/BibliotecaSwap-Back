@@ -22,7 +22,7 @@ async function register (request, response) {
                 request.body.photo,
                 request.body.province,
                 request.body.availability,
-                JSON.stringify(request.body.genres),
+                request.body.genres,
                 request.body.password];
 
             let [result] = await pool.query(sql, params);
@@ -36,19 +36,17 @@ async function register (request, response) {
     };  
 };
 
-
-async function login (request, response) {
+async function login(request, response) {
     try {
         let sql;
         let params;
         let respuesta;
 
+        // Consulta info usuario
         sql = `SELECT id_user, name, last_name, email, photo, about, province, availability, genres, hidden 
             FROM user 
             WHERE email = ? AND password = ?`;
-        params = [
-            request.body.email,
-            request.body.password];
+        params = [request.body.email, request.body.password];
         
         let [result] = await pool.query(sql, params);
 
@@ -57,37 +55,57 @@ async function login (request, response) {
         } else {
             let user = result[0]; 
 
-            // consulta total estrellas valoracion
-            sql = `SELECT AVG(rating) as media FROM ratings WHERE id_rated = ?`;
+            // consulta media estrellas y total reseñas
+            sql = `SELECT AVG(rating) as media, COUNT(rating) as totalResenas 
+            FROM ratings 
+            WHERE id_rated = ?`;
             params = [user.id_user];
 
-            let [totalEstrellas] = await pool.query(sql, params);
-            let rating = totalEstrellas[0].media;
+            let [ratings] = await pool.query(sql, params);
+            let rating = ratings[0].media;
+            let totalResenas = ratings[0].totalResenas;
 
-            // consulta reseñas
+            // consulta info reseñas
             sql = `SELECT name, last_name, rating, comment 
                    FROM ratings
                    JOIN user ON ratings.id_rater = user.id_user 
                    WHERE ratings.id_rated = ?`;
             params = [user.id_user];
 
-            let [totalResenas] = await pool.query(sql, params);
-            let resenas = totalResenas.map(row => ({
+            let [resenasInfo] = await pool.query(sql, params);
+            let resenas = resenasInfo.map(row => ({
                 name: row.name,
                 last_name: row.last_name,
                 rating: row.rating,
                 comment: row.comment
             }));
-            
-            respuesta = {error: false, codigo: 200, mensaje: "Sesión iniciada", dataUser: {...user, rating: rating || 0, resenas: resenas || []}};
+
+            // consulta info libros
+            sql = `SELECT * FROM book 
+                   WHERE owner = ?`;
+            params = [user.id_user];
+
+            let [libros] = await pool.query(sql, params);
+
+            respuesta = {
+                error: false,
+                codigo: 200,
+                mensaje: "Sesión iniciada",
+                dataUser: {
+                    ...user,
+                    rating: rating || 0,
+                    totalResenas: totalResenas || 0,
+                    resenas: resenas || [],
+                    libros: libros || [],
+                }
+            };
         };
 
-        response.send(respuesta)
+        response.send(respuesta);
 
-    } catch(error) {
+    } catch (error) {
         console.log(error);
     };
 };
-
 
 module.exports = {register, login};
