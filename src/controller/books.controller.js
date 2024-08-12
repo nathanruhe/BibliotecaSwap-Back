@@ -5,7 +5,7 @@ async function landing (request, response) {
         
         let respuesta;
 
-        let sql = `SELECT genre, photo FROM book ORDER BY start_date DESC LIMIT 9`;
+        let sql = `SELECT id_book, photo, genre FROM book ORDER BY id_book DESC LIMIT 9`;
 
         let [result] = await pool.query(sql);
         console.log(result);
