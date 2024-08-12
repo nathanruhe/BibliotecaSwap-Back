@@ -4,7 +4,7 @@ const booksCtrl = require("../controller/books.controller");
 
 // añadir rutas
 
-
+router.get("/", booksCtrl.landing);
 
 
 module.exports = router;
