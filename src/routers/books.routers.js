@@ -5,7 +5,7 @@ const booksCtrl = require("../controller/books.controller");
 // añadir rutas
 
 router.get("/", booksCtrl.landing);
-router.get("/favoritos/:id_user", booksCtrl.likeBooks);
+router.get("/favoritos/:id_user", booksCtrl.userLikesBooks);
 
 
 module.exports = router;
