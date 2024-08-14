@@ -52,4 +52,47 @@ async function userLikesBooks (request, response) {
     };  
 };
 
-module.exports = { landing, userLikesBooks };
+async function getBooks(request, response) {
+
+    const { userId } = req.query; 
+
+    try {
+        let sql = "SELECT * FROM book WHERE owner != ?";
+        let [books] = await pool.query(sql, [userId]);
+
+        response.json({ error: false, dataBook: books });
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ error: true, message: "Error al obtener los libros" });
+    }
+}
+
+async function addLike(req, res) {
+    const { id_user, id_book } = req.body;
+
+    try {
+        const sql = "INSERT INTO likes (id_user, id_book) VALUES (?, ?)";
+        const [result] = await pool.query(sql, [id_user, id_book]);
+
+        res.status(200).json({ error: false, message: "Like añadido", result });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: true, message: "Error al añadir like" });
+    }
+}
+
+async function getUserLikes(req, res) {
+    const { id_user } = req.params;
+
+    try {
+        const sql = `SELECT likes.id_book, likes.id_user FROM likes JOIN book ON likes.id_book = book.id_book WHERE likes.id_user = ?`;
+        const [result] = await pool.query(sql, [id_user]);
+
+        res.status(200).json({ error: false, data: result });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: true, message: "Error al obtener los likes" });
+    }
+}
+
+module.exports = { landing, userLikesBooks, getBooks, addLike, getUserLikes };
