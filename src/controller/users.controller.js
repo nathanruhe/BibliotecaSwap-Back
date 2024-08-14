@@ -115,8 +115,8 @@ async function profile(request, response) {
 
         let respuesta;
 
-        let sql = `SELECT l.id_book, l.id_like, l.id_user, b.title, b.author, b.genre, b.photo, b.status FROM like AS l ` +
-                  `JOIN book AS b ON (l.id_book = b.id_book) WHERE l.id_user = ? ORDER BY l.id_like ASC LIMIT 8`;
+        let sql = `SELECT r.id_ratings, r.id_rated, r.id_rater, r.rating, r.comment, u.id_user, u.name, u.last_name, u.photo, u.about, u.genres, u.availability, u.hidden FROM user AS u ` +
+                  `JOIN ratings AS r ON (r.id_rater = u.id_user) WHERE u.id_user = 1 ORDER BY r.id_ratings ASC LIMIT 8`;
 
         let [result] = await pool.query(sql, params);
         console.log(result);
