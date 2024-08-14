@@ -3,8 +3,8 @@ const router = Router();
 const booksCtrl = require("../controller/books.controller");
 
 // añadir rutas
-
-
+router.get("/home", booksCtrl.getBooks);  
+router.delete("/miBiblioteca/:id", booksCtrl.deleteBook); 
 
 
 module.exports = router;
