@@ -108,4 +108,31 @@ async function login(request, response) {
     };
 };
 
-module.exports = {register, login};
+async function profile(request, response) {
+    try {
+  
+        let params = [this.userService.user.id_user];  
+
+        let respuesta;
+
+        let sql = `SELECT l.id_book, l.id_like, l.id_user, b.title, b.author, b.genre, b.photo, b.status FROM like AS l ` +
+                  `JOIN book AS b ON (l.id_book = b.id_book) WHERE l.id_user = ? ORDER BY l.id_like ASC LIMIT 8`;
+
+        let [result] = await pool.query(sql, params);
+        console.log(result);
+
+        if (result) {
+            respuesta = {error: false, codigo: 200, mensaje: "Mostrando datos del Usuario", dataBook: result};
+        } else {
+            respuesta = {error: false, codigo: 200, mensaje: "¡Aún no tienes el perfil editado!"};
+        };
+
+        response.send(respuesta);
+
+    } catch (error) {
+
+        response.send({ error: true, codigo: 500, mensaje: error });
+    };  
+};
+
+module.exports = {register, login, profile};

@@ -26,8 +26,7 @@ async function landing (request, response) {
 async function userLikesBooks (request, response) {
     try {
         
-        let params = [request.url.id_user];  
-        // body.id_user;
+        let params = [this.userService.user.id_user];  
 
         let respuesta;
 
@@ -38,7 +37,7 @@ async function userLikesBooks (request, response) {
         console.log(result);
 
         if (result) {
-            respuesta = {error: false, codigo: 200, mensaje: "Búsqueda de los libros seguidos completada", databook: result};
+            respuesta = {error: false, codigo: 200, mensaje: "Búsqueda de los libros seguidos completada", dataBook: result};
         } else {
             respuesta = {error: false, codigo: 200, mensaje: "¡Aún no tienes libros en seguimiento!"};
         };
