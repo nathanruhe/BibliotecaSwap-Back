@@ -66,5 +66,16 @@ async function getBooks(req, res) {
     }
 }
 
+async function getAllUsers(req, res) {
+    try {
+        const sql = `SELECT * FROM user;`; 
+        const [users] = await pool.query(sql); 
+        res.json({ error: false, dataUsers: users });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: true, message: "Error al obtener los usuarios" });
+    }
+}
 
-module.exports = { landing, userLikesBooks, getBooks };
+
+module.exports = { landing, userLikesBooks, getBooks, getAllUsers };

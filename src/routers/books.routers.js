@@ -8,6 +8,7 @@ router.get("/", booksCtrl.landing);
 router.get("/favoritos/:id_user", booksCtrl.userLikesBooks);
 
 router.get("/home", booksCtrl.getBooks);
+router.get("/home", booksCtrl.getAllUsers);
 
 module.exports = router;
 
