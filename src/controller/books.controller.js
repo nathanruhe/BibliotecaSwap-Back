@@ -52,13 +52,30 @@ async function userLikesBooks (request, response) {
     };  
 };
 
+//let sql = "SELECT * FROM book";
 async function getBooks(req, res) {
     try {
-        console.log("Ejecutando consulta SQL para obtener libros...");
-        let sql = "SELECT * FROM book";
-        let [books] = await pool.query(sql);
-        console.log("Libros obtenidos de la base de datos:", books);
+        console.log("obtener libros...");
 
+        let sql = `
+            SELECT 
+                b.*, 
+                u.province AS owner_province 
+            FROM 
+                book b
+            JOIN 
+                user u 
+            ON 
+                b.owner = u.id_user
+        `;
+        let [books] = await pool.query(sql);
+
+        books = books.map(book => ({
+            ...book,
+            owner_province: book.owner_province
+        }));
+
+        console.log("Libros obtenidos de la base de datos:", books);
         res.json({ error: false, dataBook: books });
     } catch (error) {
         console.error(error);
@@ -66,7 +83,7 @@ async function getBooks(req, res) {
     }
 }
 
-async function getAllUsers(req, res) {
+async function getUsers(req, res) {
     try {
         const sql = `SELECT * FROM user;`; 
         const [users] = await pool.query(sql); 
@@ -78,4 +95,6 @@ async function getAllUsers(req, res) {
 }
 
 
-module.exports = { landing, userLikesBooks, getBooks, getAllUsers };
+
+
+module.exports = { landing, userLikesBooks, getBooks, getUsers};
