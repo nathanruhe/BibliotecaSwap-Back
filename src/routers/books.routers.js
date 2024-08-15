@@ -8,8 +8,6 @@ router.get("/", booksCtrl.landing);
 router.get("/favoritos/:id_user", booksCtrl.userLikesBooks);
 
 router.get("/home", booksCtrl.getBooks);
-router.post("/like", booksCtrl.addLike);
-router.get("/like/:id_user", booksCtrl.getUserLikes);
 
 module.exports = router;
 
