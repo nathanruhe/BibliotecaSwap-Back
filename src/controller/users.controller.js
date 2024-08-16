@@ -109,28 +109,29 @@ async function login(request, response) {
 };
 
 async function profile(request, response) {
+    console.log('entra profile')
     try {
-  
-        let params = [this.userService.user.id_user];  
+        console.log(request)
+        // let params = [this.userService.user.id_user];  
 
-        let respuesta;
+        // let respuesta;
 
-        let sql = `SELECT r.id_ratings, r.id_rated, r.id_rater, r.rating, r.comment, u.id_user, u.name, u.last_name, u.photo, u.about, u.genres, u.availability, u.hidden FROM user AS u ` +
-                  `JOIN ratings AS r ON (r.id_rater = u.id_user) WHERE u.id_user = ? ORDER BY r.id_ratings ASC LIMIT 8`;
+        // let sql = `SELECT r.id_ratings, r.id_rated, r.id_rater, r.rating, r.comment, u.id_user, u.name, u.last_name, u.photo, u.about, u.genres, u.availability, u.hidden FROM user AS u ` +
+        //           `JOIN ratings AS r ON (r.id_rater = u.id_user) WHERE u.id_user = ? ORDER BY r.id_ratings ASC LIMIT 8`;
 
-        let [result] = await pool.query(sql, params);
-        console.log(result);
+        // let [result] = await pool.query(sql, params);
+        // console.log(result);
 
-        if (result) {
-            respuesta = {error: false, codigo: 200, mensaje: "Mostrando datos del Usuario", dataUser: result};
-        } else {
-            respuesta = {error: false, codigo: 200, mensaje: "¡Aún no tienes el perfil editado!"};
-        };
+        // if (result) {
+        //     respuesta = {error: false, codigo: 200, mensaje: "Mostrando datos del Usuario", dataUser: result};  // hay que añadir dataResena?
+        // } else {
+        //     respuesta = {error: false, codigo: 200, mensaje: "¡Aún no tienes el perfil editado!"};
+        // };
 
-        response.send(respuesta);
+        // response.send(respuesta);
+        response.send({ "hola": true})
 
     } catch (error) {
-
         response.send({ error: true, codigo: 500, mensaje: error });
     };  
 };

@@ -4,7 +4,7 @@ const userCtrl = require("../controller/users.controller");
 
 // añadir rutas
 
-router.get("/perfil", userCtrl.profile);
+router.get("/perfil/:id_user", userCtrl.profile);
 
 router.post("/register", userCtrl.register);
 router.post("/login", userCtrl.login); 
