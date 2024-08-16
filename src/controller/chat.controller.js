@@ -1,4 +1,6 @@
-async function createChatAndSendMessage(request, response) {
+const pool = require("../database"); 
+
+async function enviarMensaje(request, response) {
     try {
         const { id_user1, id_user2, emisor, message } = request.body;
 
@@ -19,9 +21,13 @@ async function createChatAndSendMessage(request, response) {
         params = [id_chat];
         await pool.query(sql, params);
 
-        response.status(200).json({ error: false, message: "Chat created and message sent" });
+        response.status(200).json({ error: false, message: "Chat creado y mensaje enviado" });
     } catch (error) {
         console.error(error);
-        response.status(500).json({ error: true, message: "Error in chat creation or message sending" });
+        response.status(500).json({ error: true, message: "Error al crear el chat o al enviar el mensaje" });
     }
 }
+
+module.exports = {
+    enviarMensaje,
+};
