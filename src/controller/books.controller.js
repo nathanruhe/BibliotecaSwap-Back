@@ -57,17 +57,12 @@ async function getBooks(req, res) {
     try {
         console.log("obtener libros...");
 
-        let sql = `
-            SELECT 
-                b.*, 
-                u.province AS owner_province 
-            FROM 
-                book b
-            JOIN 
-                user u 
-            ON 
-                b.owner = u.id_user
-        `;
+        let sql = 
+            `SELECT b.*, 
+            u.province AS owner_province 
+            FROM book b
+            JOIN user u 
+            ON b.owner = u.id_user`;
         let [books] = await pool.query(sql);
 
         books = books.map(book => ({
