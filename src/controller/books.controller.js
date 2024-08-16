@@ -51,4 +51,44 @@ async function userLikesBooks (request, response) {
     };  
 };
 
-module.exports = { landing, userLikesBooks };
+//let sql = "SELECT * FROM book";
+async function getBooks(req, res) {
+    try {
+        console.log("obtener libros...");
+
+        let sql = 
+            `SELECT b.*, 
+            u.province AS owner_province 
+            FROM book b
+            JOIN user u 
+            ON b.owner = u.id_user`;
+        let [books] = await pool.query(sql);
+
+        books = books.map(book => ({
+            ...book,
+            owner_province: book.owner_province
+        }));
+
+        console.log("Libros obtenidos de la base de datos:", books);
+        res.json({ error: false, dataBook: books });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: true, message: "Error al obtener los libros" });
+    }
+}
+
+async function getUsers(req, res) {
+    try {
+        const sql = `SELECT * FROM user;`; 
+        const [users] = await pool.query(sql); 
+        res.json({ error: false, dataUsers: users });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: true, message: "Error al obtener los usuarios" });
+    }
+}
+
+
+
+
+module.exports = { landing, userLikesBooks, getBooks, getUsers};

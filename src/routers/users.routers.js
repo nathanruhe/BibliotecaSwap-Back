@@ -8,7 +8,7 @@ router.get("/perfil/:id_user", userCtrl.profile);
 
 router.post("/register", userCtrl.register);
 router.post("/login", userCtrl.login); 
-
+router.get("/perfil-otros/:id", userCtrl.getUserById);
 
 module.exports = router;
 
