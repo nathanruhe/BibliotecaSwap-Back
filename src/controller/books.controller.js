@@ -26,12 +26,13 @@ async function landing (request, response) {
 async function userLikesBooks (request, response) {
     try {
         
-        let params = [this.userService.user.id_user];  
+        // let params = [this.userService.user.id_user];  
+        const params = [request.params.id_user];
 
         let respuesta;
 
-        let sql = `SELECT l.id_book, l.id_like, l.id_user, b.title, b.author, b.genre, b.photo, b.status FROM like AS l ` +
-                  `JOIN book AS b ON (l.id_book = b.id_book) WHERE l.id_user = ? ORDER BY l.id_like ASC LIMIT 8`;
+        let sql = `SELECT l.id_book, l.id_like, l.id_user, b.title, b.author, b.genre, b.photo, b.status FROM likes AS l ` +
+                  `JOIN book AS b ON (l.id_book = b.id_book) WHERE l.id_user = ? ORDER BY l.id_like ASC`;
 
         let [result] = await pool.query(sql, params);
         console.log(result);
