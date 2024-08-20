@@ -89,7 +89,33 @@ async function getUsers(req, res) {
     }
 }
 
+async function getBooksUsers(req, res) {
+    try {
+        const userId = req.query.userId; 
+
+        const sql = 
+            `SELECT b.*, 
+            u1.id_user AS ownerID,
+            u1.name AS owner_name, 
+            u1.last_name AS owner_last_name, 
+            u2.id_user AS borrowerID,
+            u2.name AS borrower_name, 
+            u2.last_name AS borrower_last_name
+            FROM book b
+            LEFT JOIN user u1 ON b.owner = u1.id_user
+            LEFT JOIN user u2 ON b.borrower = u2.id_user
+            WHERE b.owner = ? OR (b.owner != ? AND b.borrower = ?);`;
+
+        const [booksUsers] = await pool.query(sql, [userId, userId, userId]);
+
+        res.json({ error: false, dataBooksUsers: booksUsers });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: true, message: "Error al obtener los libros y usuarios" });
+    }
+}
 
 
 
-module.exports = { landing, userLikesBooks, getBooks, getUsers};
+
+module.exports = { landing, userLikesBooks, getBooks, getUsers, getBooksUsers};

@@ -9,6 +9,7 @@ router.get("/favoritos/:id_user", booksCtrl.userLikesBooks);
 
 router.get("/home", booksCtrl.getBooks);
 router.get("/usuarios", booksCtrl.getUsers);
+router.get("/biblioteca", booksCtrl.getBooksUsers);
 
 module.exports = router;
 
