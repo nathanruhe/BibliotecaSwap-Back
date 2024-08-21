@@ -10,6 +10,7 @@ router.get("/favoritos/:id_user", booksCtrl.userLikesBooks);
 router.get("/home", booksCtrl.getBooks);
 router.get("/usuarios", booksCtrl.getUsers);
 router.get("/biblioteca", booksCtrl.getBooksUsers);
+router.delete("/book/:id", booksCtrl.deleteBook);
 
 module.exports = router;
 
