@@ -115,7 +115,28 @@ async function getBooksUsers(req, res) {
     }
 }
 
+async function deleteBook(req, res) {
+    const connection = await pool.getConnection();
+    try {
+        const { id } = req.params;
+        await connection.beginTransaction();
 
+        await connection.query('DELETE FROM `likes` WHERE id_book = ?', [id]);
+        const [result] = await connection.query('DELETE FROM `book` WHERE id_book = ?', [id]);
 
+        
+        if (result.affectedRows > 0) {
+            await connection.commit();
+            res.status(200).json({ error: false, message: "Libro eliminado correctamente" });
+        } else {
+            await connection.rollback();
+            res.status(404).json({ error: true, message: "Libro no encontrado" });
+        }
+    } catch (error) {
+        await connection.rollback();
+        console.error("Error al eliminar el libro:", error);
+        res.status(500).json({ error: true, message: "Error al eliminar el libro" });
+    } 
+}
 
-module.exports = { landing, userLikesBooks, getBooks, getUsers, getBooksUsers};
+module.exports = { landing, userLikesBooks, getBooks, getUsers, getBooksUsers, deleteBook };
