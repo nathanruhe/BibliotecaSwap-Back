@@ -34,11 +34,11 @@ async function userLikesBooks (request, response) {
         let sql = `SELECT l.id_book, l.id_like, l.id_user, b.title, b.author, b.genre, b.photo, b.status FROM likes AS l ` +
                   `JOIN book AS b ON (l.id_book = b.id_book) WHERE l.id_user = ? ORDER BY l.id_like ASC`;
 
-        let [result] = await pool.query(sql, params);
-        console.log(result);
+        let [books] = await pool.query(sql, params);
+        console.log(books);
 
-        if (result) {
-            respuesta = {error: false, codigo: 200, mensaje: "Búsqueda de los libros seguidos completada", dataBook: result};
+        if (books) {
+            respuesta = {error: false, codigo: 200, mensaje: "Búsqueda de los libros seguidos completada", dataBook: books};
         } else {
             respuesta = {error: false, codigo: 200, mensaje: "¡Aún no tienes libros en seguimiento!"};
         };
