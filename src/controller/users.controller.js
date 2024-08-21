@@ -13,16 +13,17 @@ async function register (request, response) {
         if (existe.length > 0) {
             respuesta = {error: true, codigo: 200, mensaje: "Ya existe un usuario con ese email"};
         } else {
-            sql = `INSERT INTO user (name, last_name, email, photo, province, availability, genres, password)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+            sql = `INSERT INTO user (name, last_name, email, photo, about, province, availability, genres, password)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
             params = [
                 request.body.name,
                 request.body.last_name,
                 request.body.email,
                 request.body.photo,
+                request.body.about,
                 request.body.province,
                 request.body.availability,
-                request.body.genres,
+                JSON.stringify(request.body.genres),
                 request.body.password];
 
             let [result] = await pool.query(sql, params);
