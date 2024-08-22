@@ -229,4 +229,21 @@ async function getUserById(request, response) {
     }
 }
 
-module.exports = { register, login, getUserById, profile };
+async function userHidden(request, response) {
+    try{
+        let sql;
+        const params = [request.body.hidden, request.body.id_user];
+
+        sql = `UPDATE user SET hidden = ? WHERE id_user = ?`;
+
+        const [user] = await pool.query(sql, params);
+        console.log(user);
+
+        response.send({error: false, codigo: 200, mensaje: "Visivilidad Usuario Modificada"});
+
+    } catch (error) {
+        response.send({ error: true, codigo: 500, mensaje: error });
+    }
+}
+
+module.exports = { register, login, getUserById, profile, userHidden };
