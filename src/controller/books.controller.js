@@ -25,8 +25,6 @@ async function landing (request, response) {
 
 async function userLikesBooks (request, response) {
     try {
-        
-        // let params = [this.userService.user.id_user];  
         const params = [request.params.id_user];
 
         let respuesta;
@@ -52,7 +50,6 @@ async function userLikesBooks (request, response) {
     };  
 };
 
-//let sql = "SELECT * FROM book";
 async function getBooks(req, res) {
     try {
         console.log("obtener libros...");
@@ -92,8 +89,5 @@ async function getUsers(req, res) {
         res.status(500).json({ error: true, message: "Error al obtener los usuarios" });
     }
 }
-
-
-
 
 module.exports = { landing, userLikesBooks, getBooks, getUsers};
