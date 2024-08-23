@@ -233,13 +233,19 @@ async function userHidden(request, response) {
     try{
         let sql;
         const params = [request.body.hidden, request.body.id_user];
-
+        const params2 = [request.body.id_user];
+        
         sql = `UPDATE user SET hidden = ? WHERE id_user = ?`;
 
         const [user] = await pool.query(sql, params);
         console.log(user);
 
-        response.send({error: false, codigo: 200, mensaje: "Visivilidad Usuario Modificada"});
+        sql = `SELECT u.id_user, u.name, u.last_name, u.photo, u.about, u.genres, u.availability, u.hidden FROM user AS u ` +
+            `WHERE u.id_user = ? ` 
+
+        const [dataUser] = await pool.query(sql, params2);
+
+        response.send({error: false, codigo: 200, mensaje: "Visivilidad Usuario Modificada", dataUser });
 
     } catch (error) {
         response.send({ error: true, codigo: 500, mensaje: error });

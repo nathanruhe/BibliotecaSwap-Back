@@ -56,14 +56,18 @@ async function userLikesBooks (request, response) {
 async function getBooks(req, res) {
     try {
         console.log("obtener libros...");
+        
+        const params = [req.params.province]
 
         let sql = 
             `SELECT b.*, 
             u.province AS owner_province 
             FROM book b
             JOIN user u 
-            ON b.owner = u.id_user`;
-        let [books] = await pool.query(sql);
+            ON b.owner = u.id_user
+            WHERE u.province = ? AND u.hidden != false`;
+
+        let [books] = await pool.query(sql, params);
 
         books = books.map(book => ({
             ...book,
