@@ -12,6 +12,9 @@ router.get("/usuarios", booksCtrl.getUsers);
 router.get("/biblioteca", booksCtrl.getBooksUsers);
 router.delete("/book/:id", booksCtrl.deleteBook);
 
+router.put("/book/:id", booksCtrl.updateBook);
+router.get("/book/:id", booksCtrl.getBookById);
+
 module.exports = router;
 
 // ejemplos

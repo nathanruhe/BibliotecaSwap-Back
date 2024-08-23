@@ -70,7 +70,7 @@ async function getBooks(req, res) {
             owner_province: book.owner_province
         }));
 
-        console.log("Libros obtenidos de la base de datos:", books);
+        //console.log("Libros obtenidos de la base de datos:", books);
         res.json({ error: false, dataBook: books });
     } catch (error) {
         console.error(error);
@@ -127,16 +127,64 @@ async function deleteBook(req, res) {
         
         if (result.affectedRows > 0) {
             await connection.commit();
-            res.status(200).json({ error: false, message: "Libro eliminado correctamente" });
+            res.status(200).json({ error: false, message: "libro eliminado correctamente" });
         } else {
             await connection.rollback();
-            res.status(404).json({ error: true, message: "Libro no encontrado" });
+            res.status(404).json({ error: true, message: "libro no encontrado" });
         }
     } catch (error) {
         await connection.rollback();
-        console.error("Error al eliminar el libro:", error);
-        res.status(500).json({ error: true, message: "Error al eliminar el libro" });
+        console.error("error al eliminar el libro:", error);
+        res.status(500).json({ error: true, message: "error al eliminar el libro" });
     } 
 }
 
-module.exports = { landing, userLikesBooks, getBooks, getUsers, getBooksUsers, deleteBook };
+async function updateBook(req, res) {
+    const connection = await pool.getConnection();
+    try {
+        const { id } = req.params;
+        const { title, author, genre, photo, language } = req.body;
+
+        if (!id) {
+            throw new Error("El ID del libro no es válido");
+        }
+
+        const sql = 
+            `UPDATE book
+            SET title = ?, author = ?, genre = ?, photo = ?, language = ?
+            WHERE id_book = ?`;
+
+        const [result] = await connection.query(sql, [title, author, genre, photo, language, id]);
+
+        if (result.affectedRows > 0) {
+            res.status(200).json({ error: false, message: "libroBack actualizado" });
+        } else {
+            res.status(404).json({ error: true, message: "Libro no encontrado" });
+        }
+    } catch (error) {
+        console.error("Error al actualizar el libro:", error);
+        res.status(500).json({ error: true, message: "Error al actualizar el libro" });
+    } finally {
+        connection.release();
+    }
+}
+
+async function getBookById(req, res) {
+    try {
+        const { id } = req.params;
+
+        const sql = `SELECT * FROM book WHERE id_book = ?`;
+        const [result] = await pool.query(sql, [id]);
+
+        if (result.length > 0) {
+            res.status(200).json({ error: false, data: result[0] });
+        } else {
+            res.status(404).json({ error: true, message: "libro no encontrado" });
+        }
+    } catch (error) {
+        console.error("error por id", error);
+        res.status(500).json({ error: true, message: "error por id" });
+    }
+}
+
+module.exports = { landing, userLikesBooks, getBooks, getUsers, getBooksUsers, deleteBook, updateBook, getBookById };
