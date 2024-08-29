@@ -8,7 +8,6 @@ router.get("/lastBooks", booksCtrl.landing);
 router.get("/favoritos/:id_user", booksCtrl.userLikesBooks);
 
 // router.post("/addLibro", booksCtrl.addBook);
-// router.patch("/editLibro", booksCtrl.editBook);
 
 router.get("/home/:province", booksCtrl.getBooks);
 router.get("/usuarios", booksCtrl.getUsers);
