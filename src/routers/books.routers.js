@@ -6,9 +6,9 @@ const booksCtrl = require("../controller/books.controller");
 
 router.get("/lastBooks", booksCtrl.landing);
 router.get("/favoritos/:id_user", booksCtrl.userLikesBooks);
+// router.get("/favoritos/:id_user", booksCtrl.userLikesBooksMore);
 
-// router.post("/addLibro", booksCtrl.addBook);
-// router.patch("/editLibro", booksCtrl.editBook);
+router.post("/addLibro", booksCtrl.addBook);
 
 router.get("/home/:province", booksCtrl.getBooks);
 router.get("/usuarios", booksCtrl.getUsers);

@@ -1,8 +1,8 @@
-const {pool} = require("../database");
+const { pool } = require("../database");
 
-async function landing (request, response) {
+async function landing(request, response) {
     try {
-        
+
         let respuesta;
 
         let sql = `SELECT id_book, photo, genre FROM book ORDER BY id_book DESC LIMIT 9`;
@@ -11,7 +11,7 @@ async function landing (request, response) {
         console.log(result);
 
         if (result) {
-            respuesta = {error: false, codigo: 200, mensaje: "Búsqueda de las últimas adquisiciones de Biblioteca Completada", dataBook: result};
+            respuesta = { error: false, codigo: 200, mensaje: "Búsqueda de las últimas adquisiciones de Biblioteca Completada", dataBook: result };
         };
 
         response.send(respuesta);
@@ -20,25 +20,25 @@ async function landing (request, response) {
 
         response.send({ error: true, codigo: 500, mensaje: error });
 
-    };  
+    };
 };
 
-async function userLikesBooks (request, response) {
+async function userLikesBooks(request, response) {
     try {
         const params = [request.params.id_user];
 
         let respuesta;
 
         let sql = `SELECT l.id_book, l.id_like, l.id_user, b.title, b.author, b.genre, b.photo, b.status FROM likes AS l ` +
-                  `JOIN book AS b ON (l.id_book = b.id_book) WHERE l.id_user = ? ORDER BY l.id_like ASC`;
+            `JOIN book AS b ON (l.id_book = b.id_book) WHERE l.id_user = ? ORDER BY l.id_like ASC LIMIT 7`;
 
         let [books] = await pool.query(sql, params);
         console.log(books);
 
         if (books) {
-            respuesta = {error: false, codigo: 200, mensaje: "Búsqueda de los libros seguidos completada", dataBook: books};
+            respuesta = { error: false, codigo: 200, mensaje: "Búsqueda de los libros seguidos completada", dataBook: books };
         } else {
-            respuesta = {error: false, codigo: 200, mensaje: "¡Aún no tienes libros en seguimiento!"};
+            respuesta = { error: false, codigo: 200, mensaje: "¡Aún no tienes libros en seguimiento!" };
         };
 
         response.send(respuesta);
@@ -47,16 +47,53 @@ async function userLikesBooks (request, response) {
 
         response.send({ error: true, codigo: 500, mensaje: error });
 
-    };  
+    };
+};
+
+async function userLikesBooksMore(request, response) {
+    try {
+
+        currentPage = 0;
+        itemsPerPage = 7;
+        currentPage++;
+        let n = itemsPerPage * currentPage;
+        console.log(n);
+        
+        const params = [request.params.id_user, n];
+        
+        let respuesta;
+
+        let sql = `SELECT l.id_book, l.id_like, l.id_user, b.title, b.author, b.genre, b.photo, b.status FROM likes AS l ` +
+            `JOIN book AS b ON (l.id_book = b.id_book) WHERE l.id_user = ? ORDER BY l.id_like ASC LIMIT 7 OFFSET ?`;
+
+        let [books] = await pool.query(sql, params);
+        console.log(books);
+        
+        // this.filteredBooks = filtered.slice(0, this.itemsPerPage * this.currentPage);
+        // console.log("Libros filtrados:", this.filteredBooks);
+
+        if (books) {
+            respuesta = { error: false, codigo: 200, mensaje: "Búsqueda de los libros seguidos completada", dataBook: books };
+        } else {
+            respuesta = { error: false, codigo: 200, mensaje: "¡Aún no tienes libros en seguimiento!" };
+        };
+
+        response.send(respuesta);
+
+    } catch (error) {
+
+        response.send({ error: true, codigo: 500, mensaje: error });
+
+    };
 };
 
 async function getBooks(req, res) {
     try {
         console.log("obtener libros...");
-        
+
         const params = [req.params.province]
 
-        let sql = 
+        let sql =
             `SELECT b.*, 
             u.province AS owner_province 
             FROM book b
@@ -81,8 +118,8 @@ async function getBooks(req, res) {
 
 async function getUsers(req, res) {
     try {
-        const sql = `SELECT * FROM user;`; 
-        const [users] = await pool.query(sql); 
+        const sql = `SELECT * FROM user;`;
+        const [users] = await pool.query(sql);
         res.json({ error: false, dataUsers: users });
     } catch (error) {
         console.error(error);
@@ -90,4 +127,44 @@ async function getUsers(req, res) {
     }
 }
 
-module.exports = { landing, userLikesBooks, getBooks, getUsers};
+async function lastBook(request, response) {
+    try {
+        const sql = `SELECT u.id_user, b.id_book, b.title, b.author, b.genre, b.photo, b.owner, b.status FROM book AS b
+                  JOIN user AS u ON (b.owner = u.id_user) WHERE b.owner = 6 ORDER BY b.id_book DESC LIMIT 1`;
+        const [book] = await pool.query(sql);
+        response.json({ error: false, dataUsers: users });
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ error: true, message: "Error al obtener los usuarios" });
+    }
+}
+
+async function addBook(request, response) {
+    try {
+
+        let params = [request.body.email, request.body.password];
+
+        let sql = "INSERT INTO book (title, author, genre, photo, language) VALUES ()";
+        console.log(sql);
+
+        let [result] = await pool.query(sql, params);
+        console.log(result);
+
+        if (result == []) {
+
+            let respuesta = { error: false, codigo: 200, mensaje: "El Usuario no tiene libros" };
+            response.send(respuesta);
+
+        } else {
+
+            let respuesta = { error: false, codigo: 200, mensaje: "Libro Insertado Correctamente", dataBook: result };
+            response.send(respuesta);
+        }
+
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ error: true, message: "Error: el usuario del libro no existe" });
+    }
+}
+
+module.exports = { landing, userLikesBooks, userLikesBooksMore, getBooks, getUsers, lastBook, addBook };
