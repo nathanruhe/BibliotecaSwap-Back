@@ -4,10 +4,12 @@ const booksCtrl = require("../controller/books.controller");
 
 // añadir rutas
 
-router.get("/", booksCtrl.landing);
+router.get("/lastBooks", booksCtrl.landing);
 router.get("/favoritos/:id_user", booksCtrl.userLikesBooks);
 
-router.get("/home", booksCtrl.getBooks);
+// router.post("/addLibro", booksCtrl.addBook);
+
+router.get("/home/:province", booksCtrl.getBooks);
 router.get("/usuarios", booksCtrl.getUsers);
 router.get("/biblioteca", booksCtrl.getBooksUsers);
 router.delete("/book/:id", booksCtrl.deleteBook);
@@ -16,10 +18,3 @@ router.put("/book/:id", booksCtrl.updateBook);
 router.get("/book/:id", booksCtrl.getBookById);
 
 module.exports = router;
-
-// ejemplos
-// router.get("/books", booksCtrl.getAllBooks);
-// router.get("/books/:id_user/:id_book", booksCtrl.getBook);
-// router.post("/books", booksCtrl.postBook);
-// router.put("/books", booksCtrl.putBook);
-// router.delete("/books", booksCtrl.deleteBook);

@@ -25,20 +25,18 @@ async function landing (request, response) {
 
 async function userLikesBooks (request, response) {
     try {
-        
-        let params = [request.url.id_user];  
-        // body.id_user;
+        const params = [request.params.id_user];
 
         let respuesta;
 
-        let sql = `SELECT l.id_book, l.id_like, l.id_user, b.title, b.author, b.genre, b.photo, b.status FROM like AS l WHERE l.id_user = ? ` +
-                  `JOIN book AS b ON (l.id_book = b.id_book) ORDER BY l.id_like ASC LIMIT 8`;
+        let sql = `SELECT l.id_book, l.id_like, l.id_user, b.title, b.author, b.genre, b.photo, b.status FROM likes AS l ` +
+                  `JOIN book AS b ON (l.id_book = b.id_book) WHERE l.id_user = ? ORDER BY l.id_like ASC`;
 
-        let [result] = await pool.query(sql, params);
-        console.log(result);
+        let [books] = await pool.query(sql, params);
+        console.log(books);
 
-        if (result) {
-            respuesta = {error: false, codigo: 200, mensaje: "Búsqueda de los libros seguidos completada", databook: result};
+        if (books) {
+            respuesta = {error: false, codigo: 200, mensaje: "Búsqueda de los libros seguidos completada", dataBook: books};
         } else {
             respuesta = {error: false, codigo: 200, mensaje: "¡Aún no tienes libros en seguimiento!"};
         };
@@ -52,18 +50,21 @@ async function userLikesBooks (request, response) {
     };  
 };
 
-//let sql = "SELECT * FROM book";
 async function getBooks(req, res) {
     try {
         console.log("obtener libros...");
+        
+        const params = [req.params.province]
 
         let sql = 
             `SELECT b.*, 
             u.province AS owner_province 
             FROM book b
             JOIN user u 
-            ON b.owner = u.id_user`;
-        let [books] = await pool.query(sql);
+            ON b.owner = u.id_user
+            WHERE u.province = ? AND u.hidden != false`;
+
+        let [books] = await pool.query(sql, params);
 
         books = books.map(book => ({
             ...book,
