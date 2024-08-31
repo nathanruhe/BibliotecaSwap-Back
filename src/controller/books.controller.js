@@ -68,9 +68,6 @@ async function userLikesBooksMore(request, response) {
 
         let [books] = await pool.query(sql, params);
         console.log(books);
-        
-        // this.filteredBooks = filtered.slice(0, this.itemsPerPage * this.currentPage);
-        // console.log("Libros filtrados:", this.filteredBooks);
 
         if (books) {
             respuesta = { error: false, codigo: 200, mensaje: "Búsqueda de los libros seguidos completada", dataBook: books };
