@@ -253,4 +253,26 @@ async function userHidden(request, response) {
     }
 }
 
-module.exports = { register, login, getUserById, profile, userHidden };
+async function updateProfile(request, response) {
+    try {
+        const { id_user, name, last_name, about, province, availability, genres } = request.body;
+
+        const sql = `UPDATE user 
+                     SET name = ?, last_name = ?, about = ?, province = ?, availability = ?, genres = ?
+                     WHERE id_user = ?`;
+        const params = [name, last_name, about, province, availability, JSON.stringify(genres), id_user];
+
+        const [result] = await pool.query(sql, params);
+
+        if (result.affectedRows > 0) {
+            response.send({ error: false, codigo: 200, mensaje: "Perfil actualizado correctamente" });
+        } else {
+            response.send({ error: true, codigo: 400, mensaje: "No se pudo actualizar el perfil" });
+        }
+    } catch (error) {
+        console.log(error);
+        response.send({ error: true, codigo: 500, mensaje: "Error al actualizar el perfil" });
+    }
+}
+
+module.exports = { register, login, getUserById, profile, userHidden, updateProfile };

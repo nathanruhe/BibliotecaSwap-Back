@@ -32,10 +32,29 @@ async function enviarMensaje(request, response) {
         response.status(200).json({ error: false, message: "Chat creado/existe y mensaje enviado" });
     } catch (error) {
         console.error(error);
-        response.status(500).json({ error: true, message: "Error creando chat or mandando mensaje" });
+        response.status(500).json({ error: true, message: "Error creando chat o enviando mensaje" });
+    }
+}
+
+async function obtenerMensajes(request, response) {
+    const { id_chat } = request.params;
+
+    try {
+        const [rows] = await pool.query(
+            `SELECT * FROM message WHERE id_chat = ? ORDER BY timestamp ASC`,
+            [id_chat]
+        );
+        if (rows.length === 0) {
+            return response.status(404).json({ error: true, message: "No hay mensajes" });
+        }
+        response.status(200).json({ messages: rows });
+    } catch (error) {
+        console.error("Error buscando mensajes:", error);
+        response.status(500).json({ error: true, message: "No se pudo buscar mensajes" });
     }
 }
 
 module.exports = {
     enviarMensaje,
+    obtenerMensajes
 };
