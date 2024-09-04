@@ -273,6 +273,55 @@ async function updateProfile(request, response) {
         console.log(error);
         response.send({ error: true, codigo: 500, mensaje: "Error al actualizar el perfil" });
     }
+
+    async function updatePreferences(request, response) {
+        try {
+            const { id_user, availability, genres } = request.body;
+    
+            const sql = `UPDATE user 
+                         SET availability = ?, genres = ?
+                         WHERE id_user = ?`;
+            const params = [availability, JSON.stringify(genres), id_user];
+    
+            const [result] = await pool.query(sql, params);
+    
+            if (result.affectedRows > 0) {
+                response.send({ error: false, codigo: 200, mensaje: "Preferencias actualizadas correctamente" });
+            } else {
+                response.send({ error: true, codigo: 400, mensaje: "No se pudieron actualizar las preferencias" });
+            }
+        } catch (error) {
+            console.log(error);
+            response.send({ error: true, codigo: 500, mensaje: "Error al actualizar las preferencias" });
+        }
+    }
+
+    async function changePassword(request, response) {
+        try {
+            const { id_user, currentPassword, newPassword } = request.body;
+    
+            let sql = `SELECT password FROM user WHERE id_user = ?`;
+            let params = [id_user];
+            let [result] = await pool.query(sql, params);
+    
+            if (result.length === 0 || result[0].password !== currentPassword) {
+                return response.send({ error: true, codigo: 400, mensaje: "La contraseña actual no es correcta" });
+            }
+    
+            sql = `UPDATE user SET password = ? WHERE id_user = ?`;
+            params = [newPassword, id_user];
+            [result] = await pool.query(sql, params);
+    
+            if (result.affectedRows > 0) {
+                response.send({ error: false, codigo: 200, mensaje: "Contraseña cambiada correctamente" });
+            } else {
+                response.send({ error: true, codigo: 400, mensaje: "No se pudo cambiar la contraseña" });
+            }
+        } catch (error) {
+            console.log(error);
+            response.send({ error: true, codigo: 500, mensaje: "Error al cambiar la contraseña" });
+        }
+    } 
 }
 
-module.exports = { register, login, getUserById, profile, userHidden, updateProfile };
+module.exports = { register, login, getUserById, profile, userHidden, updateProfile, updatePreferences, changePassword };
