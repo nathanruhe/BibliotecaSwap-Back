@@ -7,7 +7,7 @@ const booksCtrl = require("../controller/books.controller");
 router.get("/lastBooks", booksCtrl.landing);
 router.get("/lastBook", booksCtrl.lastBook);
 router.get("/favoritos/:id_user", booksCtrl.userLikesBooks);
-router.get("/load/:id_user", booksCtrl.userLikesBooksMore);
+router.get("/load/:id_user/:currentPage", booksCtrl.userLikesBooksMore);
 
 router.post("/addLibro/:id_user", booksCtrl.addBook);
 

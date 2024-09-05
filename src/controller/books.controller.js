@@ -53,11 +53,10 @@ async function userLikesBooks(request, response) {
 async function userLikesBooksMore(request, response) {
     try {
 
-        currentPage = 0;
+        currentPage = +request.params.currentPage;
         itemsPerPage = 7;
-        currentPage++;
+        
         let n = itemsPerPage * currentPage;
-        console.log(n);
         
         const params = [request.params.id_user, n];
         
@@ -67,14 +66,14 @@ async function userLikesBooksMore(request, response) {
             `JOIN book AS b ON (l.id_book = b.id_book) WHERE l.id_user = ? ORDER BY l.id_like ASC LIMIT 7 OFFSET ?`;
 
         let [books] = await pool.query(sql, params);
-        console.log(books);
+        console.log('libros:', books);
 
+        currentPage = currentPage + 1;
         if (books) {
-            respuesta = { error: false, codigo: 200, mensaje: "Búsqueda de los libros seguidos completada", dataBook: books };
+            respuesta = { error: false, codigo: 200, mensaje: "Búsqueda de los libros seguidos completada", dataBook: books, currentPage };
         } else {
             respuesta = { error: false, codigo: 200, mensaje: "¡Aún no tienes libros en seguimiento!" };
         };
-
         response.send(respuesta);
 
     } catch (error) {
