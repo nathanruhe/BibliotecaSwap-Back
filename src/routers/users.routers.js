@@ -12,7 +12,7 @@ router.post("/login", userCtrl.login);
 router.get("/perfil-otros/:id", userCtrl.getUserById);
 
 router.put('/perfil/preferencias', userCtrl.updatePreferences);
-router.put('/perfil/editar', usersCtrl.updateProfile);
+router.put('/perfil/editar', userCtrl.updateProfile);
 router.put('/perfil/cambiar-contrasena', userCtrl.changePassword);
 
 module.exports = router;
