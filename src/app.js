@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(usersRouters);
 app.use(BooksRouters);
-app.use(ChatRouters);
+app.use("/chat", ChatRouters);
 app.use(booksRouters);
 app.use(function(req, res, next) {
     res.status(404).json({error:true, codigo: 404, message: "Endpoint no encontrado"});
