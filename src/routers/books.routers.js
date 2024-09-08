@@ -19,4 +19,6 @@ router.delete("/book/:id", booksCtrl.deleteBook);
 router.put("/book/:id", booksCtrl.updateBook);
 router.get("/book/:id", booksCtrl.getBookById);
 
+router.put("/:id/status", booksCtrl.updateBookStatus);
+
 module.exports = router;

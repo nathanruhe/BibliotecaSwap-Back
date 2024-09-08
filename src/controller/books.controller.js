@@ -259,4 +259,36 @@ async function addBook(request, response) {
     }
 }
 
-module.exports = { landing, userLikesBooks, userLikesBooksMore, getBooks, getUsers, lastBook, addBook, getBooksUsers, deleteBook, updateBook, getBookById };
+async function updateBookStatus(req, res) {
+    const connection = await pool.getConnection();
+    try {
+      const { id } = req.params;
+      const { status, start_date, end_date, borrower } = req.body;
+  
+      if (!id) {
+        throw new Error("El ID del libro no es válido");
+      }
+  
+      const sql = 
+        `UPDATE book
+         SET status = ?, start_date = ?, end_date = ?, borrower = ?
+         WHERE id_book = ?`;
+  
+      const [result] = await connection.query(sql, [status, start_date, end_date, borrower, id]);
+  
+      if (result.affectedRows > 0) {
+        res.status(200).json({ error: false, message: "Estado, fechas y prestatario del libro actualizados correctamente" });
+      } else {
+        res.status(404).json({ error: true, message: "Libro no encontrado" });
+      }
+    } catch (error) {
+      console.error("Error al actualizar el estado, fechas y prestatario del libro:", error);
+      res.status(500).json({ error: true, message: "Error al actualizar el estado, fechas y prestatario del libro" });
+    } finally {
+      connection.release();
+    }
+  }
+  
+  
+
+module.exports = { landing, userLikesBooks, userLikesBooksMore, getBooks, getUsers, lastBook, addBook, getBooksUsers, deleteBook, updateBook, getBookById, updateBookStatus };
