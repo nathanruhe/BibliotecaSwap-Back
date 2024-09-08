@@ -7,7 +7,7 @@ const booksCtrl = require("../controller/books.controller");
 router.get("/lastBooks", booksCtrl.landing);
 router.get("/lastBook", booksCtrl.lastBook);
 router.get("/favoritos/:id_user", booksCtrl.userLikesBooks);
-// router.get("/favoritos/:id_user", booksCtrl.userLikesBooksMore);
+router.get("/load/:id_user/:currentPage", booksCtrl.userLikesBooksMore);
 
 router.post("/addLibro/:id_user", booksCtrl.addBook);
 
@@ -18,5 +18,7 @@ router.delete("/book/:id", booksCtrl.deleteBook);
 
 router.put("/book/:id", booksCtrl.updateBook);
 router.get("/book/:id", booksCtrl.getBookById);
+
+router.put("/:id/status", booksCtrl.updateBookStatus);
 
 module.exports = router;

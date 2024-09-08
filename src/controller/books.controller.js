@@ -53,11 +53,10 @@ async function userLikesBooks(request, response) {
 async function userLikesBooksMore(request, response) {
     try {
 
-        currentPage = 0;
+        currentPage = +request.params.currentPage;
         itemsPerPage = 7;
-        currentPage++;
+        
         let n = itemsPerPage * currentPage;
-        console.log(n);
         
         const params = [request.params.id_user, n];
         
@@ -67,17 +66,14 @@ async function userLikesBooksMore(request, response) {
             `JOIN book AS b ON (l.id_book = b.id_book) WHERE l.id_user = ? ORDER BY l.id_like ASC LIMIT 7 OFFSET ?`;
 
         let [books] = await pool.query(sql, params);
-        console.log(books);
-        
-        // this.filteredBooks = filtered.slice(0, this.itemsPerPage * this.currentPage);
-        // console.log("Libros filtrados:", this.filteredBooks);
+        console.log('libros:', books);
 
+        currentPage = currentPage + 1;
         if (books) {
-            respuesta = { error: false, codigo: 200, mensaje: "Búsqueda de los libros seguidos completada", dataBook: books };
+            respuesta = { error: false, codigo: 200, mensaje: "Búsqueda de los libros seguidos completada", dataBook: books, currentPage };
         } else {
             respuesta = { error: false, codigo: 200, mensaje: "¡Aún no tienes libros en seguimiento!" };
         };
-
         response.send(respuesta);
 
     } catch (error) {
@@ -263,4 +259,36 @@ async function addBook(request, response) {
     }
 }
 
-module.exports = { landing, userLikesBooks, userLikesBooksMore, getBooks, getUsers, lastBook, addBook, getBooksUsers, deleteBook, updateBook, getBookById };
+async function updateBookStatus(req, res) {
+    const connection = await pool.getConnection();
+    try {
+      const { id } = req.params;
+      const { status, start_date, end_date, borrower } = req.body;
+  
+      if (!id) {
+        throw new Error("El ID del libro no es válido");
+      }
+  
+      const sql = 
+        `UPDATE book
+         SET status = ?, start_date = ?, end_date = ?, borrower = ?
+         WHERE id_book = ?`;
+  
+      const [result] = await connection.query(sql, [status, start_date, end_date, borrower, id]);
+  
+      if (result.affectedRows > 0) {
+        res.status(200).json({ error: false, message: "Estado, fechas y prestatario del libro actualizados correctamente" });
+      } else {
+        res.status(404).json({ error: true, message: "Libro no encontrado" });
+      }
+    } catch (error) {
+      console.error("Error al actualizar el estado, fechas y prestatario del libro:", error);
+      res.status(500).json({ error: true, message: "Error al actualizar el estado, fechas y prestatario del libro" });
+    } finally {
+      connection.release();
+    }
+  }
+  
+  
+
+module.exports = { landing, userLikesBooks, userLikesBooksMore, getBooks, getUsers, lastBook, addBook, getBooksUsers, deleteBook, updateBook, getBookById, updateBookStatus };

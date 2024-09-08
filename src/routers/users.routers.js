@@ -15,4 +15,6 @@ router.put('/perfil/preferencias', userCtrl.updatePreferences);
 router.put('/perfil/editar', userCtrl.updateProfile);
 router.put('/perfil/cambiar-contrasena', userCtrl.changePassword);
 
+router.post('/ratings', userCtrl.addRating);
+
 module.exports = router;

@@ -324,4 +324,23 @@ async function changePassword(request, response) {
     }
 } 
 
-module.exports = { register, login, getUserById, profile, userHidden, updateProfile, updatePreferences, changePassword };
+async function addRating(req, res) {
+    try {
+      const { id_rated, id_rater, rating, comment } = req.body;
+  
+      const sql = `INSERT INTO ratings (id_rated, id_rater, rating, comment) VALUES (?, ?, ?, ?)`;
+      const [result] = await pool.query(sql, [id_rated, id_rater, rating, comment]);
+  
+      if (result.affectedRows > 0) {
+        res.status(200).json({ error: false, message: "Valoración añadida correctamente" });
+      } else {
+        res.status(500).json({ error: true, message: "Error al añadir la valoración" });
+      }
+    } catch (error) {
+      console.error("Error al añadir la valoración:", error);
+      res.status(500).json({ error: true, message: "Error al añadir la valoración" });
+    }
+  }
+  
+
+module.exports = { register, login, getUserById, profile, userHidden, updateProfile, updatePreferences, changePassword, addRating };
