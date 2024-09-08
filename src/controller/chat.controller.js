@@ -24,14 +24,14 @@ async function enviarMensaje(request, response) {
 
         sql = `
             UPDATE chat 
-            SET ${emisor === 'user1' ? 'noLeido_user2' : 'noLeido_user1'} = ${emisor === 'user1' ? 'noLeido_user2' : 'noLeido_user1'} + 1
+            SET ${emisor === id_user1 ? 'noLeido_user2' : 'noLeido_user1'} = ${emisor === id_user1 ? 'noLeido_user2' : 'noLeido_user1'} + 1
             WHERE id_chat = ?`;
         params = [id_chat];
         await pool.query(sql, params);
 
         response.status(200).json({ error: false, message: "Chat creado/existe y mensaje enviado" });
     } catch (error) {
-        console.error(error);
+        console.error("Error enviando mensaje:", error);
         response.status(500).json({ error: true, message: "Error creando chat o enviando mensaje" });
     }
 }
@@ -50,7 +50,7 @@ async function obtenerMensajes(request, response) {
 
         const updateSql = `
             UPDATE chat
-            SET ${userId === 'user1' ? 'noLeido_user1' : 'noLeido_user2'} = 0
+            SET ${userId == 'user1' ? 'noLeido_user1' : 'noLeido_user2'} = 0
             WHERE id_chat = ?`;
         await pool.query(updateSql, [id_chat]);
 
@@ -92,8 +92,9 @@ async function obtenerChatsUsuario(request, response) {
     }
 }
 
+
 module.exports = {
     enviarMensaje,
     obtenerMensajes,
-    obtenerChatsUsuario
+    obtenerChatsUsuario,
 };
