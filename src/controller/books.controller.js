@@ -23,6 +23,7 @@ async function landing(request, response) {
     };
 };
 
+
 async function userLikesBooks(request, response) {
     try {
         const params = [request.params.id_user];
@@ -259,4 +260,21 @@ async function addBook(request, response) {
     }
 }
 
-module.exports = { landing, userLikesBooks, userLikesBooksMore, getBooks, getUsers, lastBook, addBook, getBooksUsers, deleteBook, updateBook, getBookById };
+async function likesBooks(req, res) {
+    try {
+        const sql = `SELECT b.id_book, b.title, b.author, b.genre, b.language, b.owner, b.borrower, b.start_date, b.end_date, b.photo, b.status, l.id_like, l.id_user
+                     FROM book b
+                     JOIN likes l ON b.id_book = l.id_book;`;
+
+        const [rows] = await pool.query(sql);
+
+        console.log("Datos obtenidos (con owner):", rows);
+
+        res.json({ error: false, data: rows });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: true, message: "Error al obtener los libros" });
+    }
+}
+
+module.exports = { landing, userLikesBooks, userLikesBooksMore, getBooks, getUsers, lastBook, addBook, getBooksUsers, deleteBook, updateBook, getBookById, likesBooks };
