@@ -122,6 +122,7 @@ async function profile(request, response) {
 
         const [user] = await pool.query(sql, params);
         console.log(user)
+        
         sql = `SELECT u.name, u.last_name, u.photo, r.rating, r.comment FROM ratings AS r
         JOIN user AS u ON r.id_rater = u.id_user 
         WHERE r.id_rated = ?`;

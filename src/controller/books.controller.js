@@ -29,7 +29,7 @@ async function userLikesBooks(request, response) {
 
         let respuesta;
 
-        let sql = `SELECT l.id_book, l.id_like, l.id_user, b.title, b.author, b.genre, b.photo, b.status FROM likes AS l ` +
+        let sql = `SELECT l.id_book, l.id_like, l.id_user, b.title, b.author, b.genre, b.photo, b.owner, b.status FROM likes AS l ` +
             `JOIN book AS b ON (l.id_book = b.id_book) WHERE l.id_user = ? ORDER BY l.id_like ASC LIMIT 7`;
 
         let [books] = await pool.query(sql, params);
@@ -62,7 +62,7 @@ async function userLikesBooksMore(request, response) {
         
         let respuesta;
 
-        let sql = `SELECT l.id_book, l.id_like, l.id_user, b.title, b.author, b.genre, b.photo, b.status FROM likes AS l ` +
+        let sql = `SELECT l.id_book, l.id_like, l.id_user, b.title, b.author, b.genre, b.photo, b.owner, b.status FROM likes AS l ` +
             `JOIN book AS b ON (l.id_book = b.id_book) WHERE l.id_user = ? ORDER BY l.id_like ASC LIMIT 7 OFFSET ?`;
 
         let [books] = await pool.query(sql, params);
