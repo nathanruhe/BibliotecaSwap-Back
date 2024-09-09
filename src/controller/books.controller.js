@@ -260,21 +260,33 @@ async function addBook(request, response) {
     }
 }
 
-async function likesBooks(req, res) {
+async function iLikesBooks(req, res) {
     try {
-        const sql = `SELECT b.id_book, b.title, b.author, b.genre, b.language, b.owner, b.borrower, b.start_date, b.end_date, b.photo, b.status, l.id_like, l.id_user
-                     FROM book b
-                     JOIN likes l ON b.id_book = l.id_book;`;
+        console.log("obtener libros...");
 
-        const [rows] = await pool.query(sql);
+        const params = [req.params.province]
 
-        console.log("Datos obtenidos (con owner):", rows);
+        let sql =
+            `SELECT b.*, 
+            u.province AS owner_province 
+            FROM book b
+            JOIN user u 
+            ON b.owner = u.id_user
+            WHERE u.province = ? AND u.hidden != false`;
 
-        res.json({ error: false, data: rows });
+        let [books] = await pool.query(sql, params);
+
+        books = books.map(book => ({
+            ...book,
+            owner_province: book.owner_province
+        }));
+
+        //console.log("Libros obtenidos de la base de datos:", books);
+        res.json({ error: false, dataBook: books });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: true, message: "Error al obtener los libros" });
     }
 }
 
-module.exports = { landing, userLikesBooks, userLikesBooksMore, getBooks, getUsers, lastBook, addBook, getBooksUsers, deleteBook, updateBook, getBookById, likesBooks };
+module.exports = { landing, userLikesBooks, userLikesBooksMore, getBooks, getUsers, lastBook, addBook, getBooksUsers, deleteBook, updateBook, getBookById, iLikesBooks };
