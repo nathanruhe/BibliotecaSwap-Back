@@ -21,4 +21,6 @@ router.get("/book/:id", booksCtrl.getBookById);
 
 router.put("/:id/status", booksCtrl.updateBookStatus);
 
+router.post('/updateExpiredBooks', booksCtrl.updateExpiredBooks);
+
 module.exports = router;

@@ -288,7 +288,27 @@ async function updateBookStatus(req, res) {
       connection.release();
     }
   }
+
+async function updateExpiredBooks(req, res) {
+    try {
+        const today = new Date();
+        const todayString = today.toISOString().split('T')[0];
+        
+        const sql = `
+            UPDATE book
+            SET status = true, start_date = NULL, end_date = NULL, borrower = NULL
+            WHERE status = false AND end_date < ?;
+        `;
+
+        const [result] = await pool.query(sql, [todayString]);
+
+        res.status(200).json({ error: false, message: "Libros actualizados correctamente" });
+    } catch (error) {
+        console.error("Error al actualizar los libros:", error);
+        res.status(500).json({ error: true, message: "Error al actualizar los libros" });
+    }
+}
   
   
 
-module.exports = { landing, userLikesBooks, userLikesBooksMore, getBooks, getUsers, lastBook, addBook, getBooksUsers, deleteBook, updateBook, getBookById, updateBookStatus };
+module.exports = { landing, userLikesBooks, userLikesBooksMore, getBooks, getUsers, lastBook, addBook, getBooksUsers, deleteBook, updateBook, getBookById, updateBookStatus, updateExpiredBooks };
