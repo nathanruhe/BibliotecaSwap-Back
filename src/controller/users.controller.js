@@ -117,7 +117,7 @@ async function profile(request, response) {
         const params = [request.params.id_user];
         let respuesta;
 
-        sql = `SELECT r.id_ratings, r.id_rated, r.id_rater, r.comment, u.id_user, u.name, u.last_name, u.photo, u.about, u.genres, u.availability, u.hidden FROM user AS u ` +
+        sql = `SELECT r.id_ratings, r.id_rated, r.id_rater, r.comment, u.id_user, u.name, u.last_name, u.photo, u.about, u.genres, u.province, u.availability, u.hidden FROM user AS u ` +
             `JOIN ratings AS r ON (r.id_rated = u.id_user) WHERE u.id_user = ? `;
 
         const [user] = await pool.query(sql, params);
