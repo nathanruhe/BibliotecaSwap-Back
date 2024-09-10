@@ -6,7 +6,7 @@ const booksCtrl = require("../controller/books.controller");
 
 router.get("/lastBooks", booksCtrl.landing);
 router.get("/lastBook", booksCtrl.lastBook);
-router.get("/favoritos/:id_user", booksCtrl.userLikesBooks);
+//router.get("/favoritos/:id_user", booksCtrl.userLikesBooks);
 router.get("/load/:id_user/:currentPage", booksCtrl.userLikesBooksMore);
 
 router.post("/addLibro/:id_user", booksCtrl.addBook);
@@ -22,5 +22,8 @@ router.get("/book/:id", booksCtrl.getBookById);
 router.put("/:id/status", booksCtrl.updateBookStatus);
 
 router.post('/updateExpiredBooks', booksCtrl.updateExpiredBooks);
+
+//router.get("/favoritos/:province/:id_user", booksCtrl.iLikeBooks);
+router.get('/favoritos', booksCtrl.getAllLikes);
 
 module.exports = router;

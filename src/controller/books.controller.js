@@ -23,6 +23,7 @@ async function landing(request, response) {
     };
 };
 
+
 async function userLikesBooks(request, response) {
     try {
         const params = [request.params.id_user];
@@ -308,7 +309,61 @@ async function updateExpiredBooks(req, res) {
         res.status(500).json({ error: true, message: "Error al actualizar los libros" });
     }
 }
-  
-  
 
-module.exports = { landing, userLikesBooks, userLikesBooksMore, getBooks, getUsers, lastBook, addBook, getBooksUsers, deleteBook, updateBook, getBookById, updateBookStatus, updateExpiredBooks };
+async function iLikeBooks(req, res) {
+    try {
+        console.log("Obteniendo libros para el usuario:", req.params.id_user);
+
+        if (!req.params.province || !req.params.id_user) {
+            return res.status(400).json({ error: true, message: "Faltan parámetros province o id_user" });
+        }
+
+        const params = [req.params.province, req.params.id_user];
+
+        let sql =
+            `SELECT b.*, 
+            u.province AS owner_province, 
+            l.id_like, 
+            l.id_user AS liked_by_user
+            FROM book b
+            JOIN user u ON b.owner = u.id_user
+            LEFT JOIN \`likes\` l ON l.id_book = b.id_book
+            WHERE u.province = ? AND u.hidden != false AND l.id_user = ?`;  
+
+
+        let [books] = await pool.query(sql, params);
+
+        if (books.length === 0) {
+            return res.status(404).json({ error: false, message: "No se encontraron libros para este usuario y provincia" });
+        }
+
+        books = books.map(book => ({
+            ...book,
+            owner_province: book.owner_province,
+            id_like: book.id_like,
+            liked_by_user: book.liked_by_user
+        }));
+
+        res.json({ error: false, dataBook: books });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: true, message: "Error al obtener los libros" });
+    }
+}
+
+async function getAllLikes(req, res) {
+    try {
+        console.log("Obteniendo todos los likes...");
+
+        let sql = `SELECT * FROM likes`;
+
+        let [likes] = await pool.query(sql);
+
+        res.json({ error: false, dataLikes: likes });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: true, message: "Error al obtener los likes" });
+    }
+}
+
+module.exports = { landing, userLikesBooks, userLikesBooksMore, getBooks, getUsers, lastBook, addBook, getBooksUsers, deleteBook, updateBook, getBookById, updateBookStatus, updateExpiredBooks, iLikeBooks, getAllLikes };
