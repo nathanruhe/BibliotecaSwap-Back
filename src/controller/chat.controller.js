@@ -62,7 +62,7 @@ async function obtenerMensajes(request, response) {
 }
 
 async function obtenerChatsUsuario(request, response) {
-    const { id_user } = request.params;
+    const id_user  = request.params;
 
     try {
         const [chats] = await pool.query(`
