@@ -25,5 +25,7 @@ router.post('/updateExpiredBooks', booksCtrl.updateExpiredBooks);
 
 //router.get("/favoritos/:province/:id_user", booksCtrl.iLikeBooks);
 router.get('/favoritos', booksCtrl.getAllLikes);
+router.post('/addLike', booksCtrl.addLike)
+router.delete('/removeLike', booksCtrl.removeLike);
 
 module.exports = router;

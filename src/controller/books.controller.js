@@ -366,4 +366,64 @@ async function getAllLikes(req, res) {
     }
 }
 
-module.exports = { landing, userLikesBooks, userLikesBooksMore, getBooks, getUsers, lastBook, addBook, getBooksUsers, deleteBook, updateBook, getBookById, updateBookStatus, updateExpiredBooks, iLikeBooks, getAllLikes };
+async function addLike(request, response) {
+    try {
+        let sql;
+        let params = [request.body.id_user, request.body.id_book];
+
+        sql = "INSERT INTO likes (id_user, id_book) VALUES (?, ?)";
+        console.log(sql);
+
+        let [result] = await pool.query(sql, params);
+        console.log(result);
+
+        if (result.affectedRows > 0) {
+            sql = `SELECT l.id_like, l.id_user, l.id_book, b.title, b.author 
+                   FROM likes AS l
+                   JOIN book AS b ON l.id_book = b.id_book
+                   WHERE l.id_like = ? LIMIT 1`;
+            
+            let [resultLike] = await pool.query(sql, [result.insertId]);
+
+            let respuesta = { 
+                error: false, codigo: 200, mensaje: "Like agregado correctamente", like: resultLike 
+            };
+            response.send(respuesta);
+
+        } else {
+            response.status(500).json({ error: true, message: "No se pudo agregar el like" });
+        }
+
+    } catch (error) {
+        console.error("Error al agregar like:", error);
+        response.status(500).json({ error: true, message: "Error en el servidor" });
+    }
+}
+
+
+
+async function removeLike(req, res) {
+    try {
+        const { id_user, id_book } = req.body;
+
+        if (!id_user || !id_book) {
+            return res.status(400).json({ error: true, message: "Faltan parámetros" });
+        }
+
+        const sql = `DELETE FROM likes WHERE id_user = ? AND id_book = ?`;
+        const [result] = await pool.query(sql, [id_user, id_book]);
+
+        if (result.affectedRows > 0) {
+            res.status(200).json({ error: false, message: "Libro eliminado de favoritos" });
+        } else {
+            res.status(500).json({ error: true, message: "No se pudo eliminar el libro de favoritos" });
+        }
+    } catch (error) {
+        console.error("Error al eliminar like:", error);
+        res.status(500).json({ error: true, message: "Error en el servidor" });
+    }
+}
+
+module.exports = { landing, userLikesBooks, userLikesBooksMore, getBooks, getUsers, lastBook, addBook, 
+    getBooksUsers, deleteBook, updateBook, getBookById, updateBookStatus, updateExpiredBooks, 
+    iLikeBooks, getAllLikes, addLike, removeLike };
