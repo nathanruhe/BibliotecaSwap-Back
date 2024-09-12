@@ -86,8 +86,6 @@ async function userLikesBooksMore(request, response) {
 
 async function getBooks(req, res) {
     try {
-        console.log("obtener libros...");
-
         const params = [req.params.province]
 
         let sql =
@@ -310,39 +308,19 @@ async function updateExpiredBooks(req, res) {
     }
 }
 
-async function iLikeBooks(req, res) {
+async function booksLikes(req, res) {
     try {
-        console.log("Obteniendo libros para el usuario:", req.params.id_user);
-
-        if (!req.params.province || !req.params.id_user) {
-            return res.status(400).json({ error: true, message: "Faltan parámetros province o id_user" });
-        }
-
-        const params = [req.params.province, req.params.id_user];
 
         let sql =
             `SELECT b.*, 
-            u.province AS owner_province, 
             l.id_like, 
             l.id_user AS liked_by_user
             FROM book b
             JOIN user u ON b.owner = u.id_user
-            LEFT JOIN \`likes\` l ON l.id_book = b.id_book
-            WHERE u.province = ? AND u.hidden != false AND l.id_user = ?`;  
+            LEFT JOIN \`likes\` l ON l.id_book = b.id_book`;
 
-
-        let [books] = await pool.query(sql, params);
-
-        if (books.length === 0) {
-            return res.status(404).json({ error: false, message: "No se encontraron libros para este usuario y provincia" });
-        }
-
-        books = books.map(book => ({
-            ...book,
-            owner_province: book.owner_province,
-            id_like: book.id_like,
-            liked_by_user: book.liked_by_user
-        }));
+        // Ejecutar la consulta SQL sin parámetros
+        let [books] = await pool.query(sql);
 
         res.json({ error: false, dataBook: books });
     } catch (error) {
@@ -353,8 +331,6 @@ async function iLikeBooks(req, res) {
 
 async function getAllLikes(req, res) {
     try {
-        console.log("Obteniendo todos los likes...");
-
         let sql = `SELECT * FROM likes`;
 
         let [likes] = await pool.query(sql);
@@ -426,4 +402,4 @@ async function removeLike(req, res) {
 
 module.exports = { landing, userLikesBooks, userLikesBooksMore, getBooks, getUsers, lastBook, addBook, 
     getBooksUsers, deleteBook, updateBook, getBookById, updateBookStatus, updateExpiredBooks, 
-    iLikeBooks, getAllLikes, addLike, removeLike };
+    booksLikes, getAllLikes, addLike, removeLike };
