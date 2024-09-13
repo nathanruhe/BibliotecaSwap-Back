@@ -1,4 +1,4 @@
-const pool = require("../database");
+const {pool} = require("../database");
 
 async function enviarMensaje(request, response) {
     try {
@@ -62,9 +62,12 @@ async function obtenerMensajes(request, response) {
 }
 
 async function obtenerChatsUsuario(request, response) {
-    const id_user  = request.params;
-
+    console.log('Dentro de obtener chats');
+    
     try {
+        const id_user  = request.params.id_user;
+        console.log('id_user:' + id_user);
+        
         const [chats] = await pool.query(`
             SELECT 
                 c.id_chat, 
