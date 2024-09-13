@@ -92,22 +92,6 @@ async function enviarMensaje(request, response) {
     }
 }
 
-
-
-<<<<<<< HEAD
-        const updateSql = `
-            UPDATE chat
-            SET ${userId == 'user1' ? 'noLeido_user1' : 'noLeido_user2'} = 0
-            WHERE id_chat = ?`;
-        await pool.query(updateSql, [id_chat]);
-
-        response.status(200).json({ messages: rows });
-    } catch (error) {
-        console.error("Error buscando mensajes:", error);
-        response.status(500).json({ error: true, message: "No se pudo buscar mensajes" });
-    }
-}
-
 async function obtenerChatsUsuario(request, response) {
     console.log('Dentro de obtener chats');
     
@@ -141,8 +125,6 @@ async function obtenerChatsUsuario(request, response) {
         response.status(500).json({ error: true, message: "No se pudo buscar chats" });
     }
 }
-=======
->>>>>>> 627aef3bffc870091ddac2325c8ef267df6013aa
 
 
 module.exports = {
