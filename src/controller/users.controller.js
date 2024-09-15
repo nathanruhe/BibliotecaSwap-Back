@@ -48,7 +48,6 @@ async function login(request, response) {
             FROM user 
             WHERE email = ? AND password = ?`;
         params = [request.body.email, request.body.password];
-
         let [result] = await pool.query(sql, params);
 
         if (result.length === 0) {
@@ -56,23 +55,21 @@ async function login(request, response) {
         } else {
             let user = result[0];
 
-            // consulta media estrellas y total reseñas
+            // Consulta media estrellas y total reseñas
             sql = `SELECT AVG(rating) as media, COUNT(rating) as totalResenas 
             FROM ratings 
             WHERE id_rated = ?`;
             params = [user.id_user];
-
             let [ratings] = await pool.query(sql, params);
             let rating = ratings[0].media;
             let totalResenas = ratings[0].totalResenas;
 
-            // consulta info reseñas
+            // Consulta info reseñas
             sql = `SELECT name, last_name, rating, comment 
                    FROM ratings
                    JOIN user ON ratings.id_rater = user.id_user 
                    WHERE ratings.id_rated = ?`;
             params = [user.id_user];
-
             let [resenasInfo] = await pool.query(sql, params);
             let resenas = resenasInfo.map(row => ({
                 name: row.name,
@@ -81,13 +78,42 @@ async function login(request, response) {
                 comment: row.comment
             }));
 
-            // consulta info libros
+            // Consulta info libros
             sql = `SELECT * FROM book 
                    WHERE owner = ?`;
             params = [user.id_user];
-
             let [libros] = await pool.query(sql, params);
 
+            // NUEVO: Consultar todos los chats del usuario
+            sql = `SELECT c.id_chat, c.id_user1, c.id_user2, c.noLeido_user1, c.noLeido_user2,
+                   u2.name as user2_name, u2.last_name as user2_last_name, u2.photo as user2_photo
+                   FROM chat AS c
+                   JOIN user u2 ON (c.id_user2 = u2.id_user)
+                   WHERE c.id_user1 = ? OR c.id_user2 = ?`;
+            params = [user.id_user, user.id_user];
+            let [chats] = await pool.query(sql, params);
+
+            // Calcular total de mensajes no leídos
+            let totalNoLeido = chats.reduce((total, chat) => {
+                if (chat.id_user1 === user.id_user) {
+                    return total + chat.noLeido_user1;
+                } else {
+                    return total + chat.noLeido_user2;
+                }
+            }, 0);
+
+            // Para cada chat, obtener los mensajes
+            let mensajes = {};
+            for (let chat of chats) {
+                sql = `SELECT * FROM message 
+                       WHERE id_chat = ? 
+                       ORDER BY timestamp ASC`;
+                params = [chat.id_chat];
+                let [messages] = await pool.query(sql, params);
+                mensajes[chat.id_chat] = messages;
+            }
+
+            // Construimos la respuesta final incluyendo los chats y mensajes
             respuesta = {
                 error: false,
                 codigo: 200,
@@ -98,16 +124,26 @@ async function login(request, response) {
                     totalResenas: totalResenas || 0,
                     resenas: resenas || [],
                     libros: libros || [],
+                    chats: chats.map(chat => ({
+                        ...chat,
+                        user2_name: chat.user2_name,
+                        user2_last_name: chat.user2_last_name,
+                        user2_photo: chat.user2_photo
+                    })) || [],
+                    mensajes: mensajes || {},
+                    totalNoLeido: totalNoLeido || 0  // Añadido para incluir el total de mensajes no leídos
                 }
             };
-        };
+        }
 
         response.send(respuesta);
 
     } catch (error) {
         console.log(error);
-    };
-};
+        response.status(500).send({ error: true, codigo: 500, mensaje: "Error en el login" });
+    }
+}
+
 
 async function profile(request, response) {
     console.log('entra profile')
