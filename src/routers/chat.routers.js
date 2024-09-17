@@ -7,6 +7,7 @@ router.get('/:id_chat/messages', chatCtrl.getMessages);
 
 // Obtener los usuarios con los que el usuario ha tenido conversaciones
 router.get('/:id_user/chats', chatCtrl.getUsersWithChats);
+// router.get('/chat/obtenerChatsUsuario/:userId', chatCtrl.getUsersWithChats);
 
 // Enviar mensaje
 router.post('/enviarMensaje', chatCtrl.enviarMensaje);
